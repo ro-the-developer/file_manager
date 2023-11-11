@@ -47,7 +47,9 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 'files' => 'files/index',
-                'files/mkdir' => 'files/mkdir',
+                'files/folder/create' => 'folder/create',
+                'files/folder/rename' => 'folder/rename',
+                'files/folder/delete' => 'folder/delete',
             ],
         ],
     ],

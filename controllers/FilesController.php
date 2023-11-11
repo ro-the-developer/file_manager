@@ -2,19 +2,11 @@
 
 namespace app\controllers;
 
-use app\models\MkdirForm;
-use yii\helpers\Url;
+use app\models\FolderForm;
 use Yii;
 use yii\helpers\FileHelper;
 use yii\filters\AccessControl;
-use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\web\Response;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
-
 
 class FilesController extends Controller
 {
@@ -25,57 +17,17 @@ class FilesController extends Controller
      */
     public function actionIndex()
     {
-        $path = $this->validatePath(Yii::$app->request->get('path', ''));
-        $mkdirModel = new MkdirForm();
-        $files = array_map('basename',
-            FileHelper::findFiles(self::getBasePath() . $path, ['recursive' => false])
-        );
-        $folders = array_map('basename',
-            FileHelper::findDirectories(self::getBasePath() . $path, ['recursive' => false])
-        );
+        $path = FolderController::validatePath(Yii::$app->request->get('path', ''));
 
         return $this->render('index',[
-            'mkdirModel' => $mkdirModel,
-            'files' => $files,
-            'folders' => $folders,
+            'folderModel' => new FolderForm(),
+            'files' => $this->getFilenames($path),
+            'folders' => $this->getFolders($path),
             'path' => $path,
             'breadcrumbs' => $this->getBreadcrumbs($path),
         ]);
     }
 
-    public function actionMkdir()
-    {
-        $path = $this->validatePath(Yii::$app->request->post()['MkdirForm']['path']);
-        $dir = Yii::$app->request->post()['MkdirForm']['dir'];
-        $newDir = self::getBasePath() . $path . "/" . $dir;
-        if (!mkdir($newDir) && !is_dir($newDir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $newDir));
-        }
-        $this->redirect(Url::to(['files/index', 'path' => $path . "/" . $dir]), 302);
-    }
-
-    public static function getBasePath()
-    {
-        return Yii::$app->basePath . "/" . Yii::$app->params['filesModule']['path'];
-    }
-
-    protected function isPathValid($path)
-    {
-        return !preg_match('![^a-zA-Z0-9_/]!', $path) && file_exists(self::getBasePath() . "/" . $path);
-    }
-    protected function validatePath($path)
-    {
-        $path = "/" . ltrim($path, "/");
-
-        if (preg_match('![^a-zA-Z0-9_/]!', $path)) {
-            throw new BadRequestHttpException();
-        }
-        if (!file_exists(self::getBasePath() . $path)) {
-            throw new NotFoundHttpException();
-        }
-
-        return $path;
-    }
     protected function getBreadcrumbs($path)
     {
         $path = trim($path,"/");
@@ -92,7 +44,19 @@ class FilesController extends Controller
                 'last' => $key === $last,
             ];
         }
-#        var_dump($breadcrumbs);die;
         return $breadcrumbs;
+    }
+    protected function getFilenames($path)
+    {
+        return array_map('basename',
+            FileHelper::findFiles(FolderController::getBasePath() . $path, ['recursive' => false])
+        );
+    }
+
+    protected function getFolders($path)
+    {
+        return array_map('basename',
+            FileHelper::findDirectories(FolderController::getBasePath() . $path, ['recursive' => false])
+        );
     }
 }
