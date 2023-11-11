@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\FilesLog;
 use yii\helpers\Url;
 use Yii;
 use yii\helpers\FileHelper;
@@ -12,6 +13,19 @@ use yii\web\NotFoundHttpException;
 
 class FolderController extends Controller
 {
+    public function beforeAction($action)
+    {
+        $request = json_encode(Yii::$app->request->post()['FolderForm']);
+        $model = new FilesLog([
+            'user_id' => 1,
+            'action' => $action->id,
+            'request' => $request
+        ]);
+        $model->insert();
+
+        return parent::beforeAction($action);
+    }
+
     public function actionCreate()
     {
         $path = self::validatePath(Yii::$app->request->post()['FolderForm']['path']);

@@ -21,7 +21,7 @@ class FolderForm extends Model
     {
         return [
             [['name', 'path'], 'required'],
-            ['name', 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/'],
+            ['name', 'match', 'pattern' => '/^[a-zA-Z0-9_]{1,50}$/'],
             ['path', 'match', 'pattern' => '/^[a-zA-Z0-9_\/]+$/'],
         ];
     }
