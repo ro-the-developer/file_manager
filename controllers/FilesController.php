@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\FolderForm;
+use app\models\UploadForm;
 use Yii;
 use yii\helpers\FileHelper;
 use yii\filters\AccessControl;
@@ -21,6 +22,7 @@ class FilesController extends Controller
 
         return $this->render('index',[
             'folderModel' => new FolderForm(),
+            'uploadModel' => new UploadForm(),
             'files' => $this->getFilenames($path),
             'folders' => $this->getFolders($path),
             'path' => $path,
@@ -49,7 +51,10 @@ class FilesController extends Controller
     protected function getFilenames($path)
     {
         return array_map('basename',
-            FileHelper::findFiles(FolderController::getBasePath() . $path, ['recursive' => false])
+            FileHelper::findFiles(
+                FolderController::getBasePath() . $path,
+                ['recursive' => false, 'except' => ['.*']]
+            )
         );
     }
 

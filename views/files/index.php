@@ -38,25 +38,36 @@ $this->title = 'File Manager';
                     <?= Html::submitButton('Create new folder', ['class' => 'btn btn-primary']) ?>
                     <?php ActiveForm::end(); ?>
                 </div>
+
+                <div class="form-group">
+                    <?php $form = ActiveForm::begin([
+                            'action' => 'folder/upload',
+                            'options' => ['enctype' => 'multipart/form-data']
+                    ]) ?>
+                    <?= $form->field($uploadModel, 'file')->fileInput() ?>
+                    <?= $form->field($uploadModel, 'path')->hiddenInput(['value'=> $path])->label(false); ?>
+                    <?= Html::submitButton('Upload in this folder', ['class' => 'btn btn-primary']) ?>
+                    <?php ActiveForm::end() ?>
+                </div>
+
                 <?php if($path !== "/"): ?>
 
-                <div class="form-group">
-                    <?php $form = ActiveForm::begin(['method' => 'post', 'action' => '/files/folder/rename']); ?>
-                    <?= $form->field($folderModel, 'name')->label(false) ?>
-                    <?= $form->field($folderModel, 'path')->hiddenInput(['value'=> $path])->label(false); ?>
-                    <?= Html::submitButton('Rename this folder', ['class' => 'btn btn-primary']) ?>
-                    <?php ActiveForm::end(); ?>
-                </div>
+                    <div class="form-group">
+                        <?php $form = ActiveForm::begin(['method' => 'post', 'action' => '/files/folder/rename']); ?>
+                        <?= $form->field($folderModel, 'name')->label(false) ?>
+                        <?= $form->field($folderModel, 'path')->hiddenInput(['value'=> $path])->label(false); ?>
+                        <?= Html::submitButton('Rename this folder', ['class' => 'btn btn-primary']) ?>
+                        <?php ActiveForm::end(); ?>
+                    </div>
 
-                <div class="form-group">
-                    <?php $form = ActiveForm::begin(['method' => 'post', 'action' => '/files/folder/delete']); ?>
-                    <?= $form->field($folderModel, 'name')->hiddenInput(['value'=> 'dummy'])->label(false) ?>
-                    <?= $form->field($folderModel, 'path')->hiddenInput(['value'=> $path])->label(false); ?>
-                    <?= Html::submitButton('Delete this folder', ['class' => 'btn btn-primary']) ?>
-                    <?= $form->field($folderModel, 'recursive')->checkbox(['label' => 'With all contents']); ?>
-
-                    <?php ActiveForm::end(); ?>
-                </div>
+                    <div class="form-group">
+                        <?php $form = ActiveForm::begin(['method' => 'post', 'action' => '/files/folder/delete']); ?>
+                        <?= $form->field($folderModel, 'name')->hiddenInput(['value'=> 'dummy'])->label(false) ?>
+                        <?= $form->field($folderModel, 'path')->hiddenInput(['value'=> $path])->label(false); ?>
+                        <?= Html::submitButton('Delete this folder', ['class' => 'btn btn-primary']) ?>
+                        <?= $form->field($folderModel, 'recursive')->checkbox(['label' => 'With all contents']); ?>
+                        <?php ActiveForm::end(); ?>
+                    </div>
 
                 <?php endif ?>
             </div>

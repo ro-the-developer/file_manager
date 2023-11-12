@@ -3,18 +3,31 @@
 namespace app\controllers;
 
 use app\models\FilesLog;
+use app\models\UploadForm;
 use yii\helpers\Url;
 use Yii;
 use yii\helpers\FileHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\UploadedFile;
 
 class FolderController extends Controller
 {
     public function beforeAction($action)
     {
-        $request = json_encode(Yii::$app->request->post()['FolderForm'], JSON_UNESCAPED_SLASHES );
+        if (isset(Yii::$app->request->post()['UploadForm'])) {
+            $file = UploadedFile::getInstance(new UploadForm(), 'file');
+            $request = [
+                'file' => $file->baseName . '.' . $file->extension,
+                'path' => Yii::$app->request->post()['UploadForm']['path'],
+            ];
+
+        } else {
+            $request = Yii::$app->request->post()['FolderForm'];
+        }
+
+        $request = json_encode($request, JSON_UNESCAPED_SLASHES );
         $model = new FilesLog([
             'user_id' => Yii::$app->user->id,
             'action' => $action->id,
@@ -78,6 +91,21 @@ class FolderController extends Controller
             FileHelper::removeDirectory($toDelete);
             $path = self::getDirname($path);
             Yii::$app->session->setFlash('success', "Folder deleted successfully.");
+        }
+        $this->redirect(Url::to(['files/index', 'path' => $path]), 302);
+    }
+
+    public function actionUpload()
+    {
+        $path = $this->validatePath(Yii::$app->request->post()['UploadForm']['path']);
+        $model = new UploadForm();
+
+        $model->file = UploadedFile::getInstance($model, 'file');
+
+        if (!$model->upload(self::getBasePath() . $path)) {
+            Yii::$app->session->setFlash('error', "Error uploading file");
+        } else {
+            Yii::$app->session->setFlash('success', "File uploaded successfully.");
         }
         $this->redirect(Url::to(['files/index', 'path' => $path]), 302);
     }
