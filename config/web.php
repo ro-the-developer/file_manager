@@ -53,6 +53,13 @@ $config = [
             ],
         ],
     ],
+    'as access' => [
+        'class' => \yii\filters\AccessControl::class,
+        'except' => ['site/error', 'site/login', 'site/logout'],
+        'rules' => [
+            ['allow' => true, 'roles' => ['@']],
+        ],
+    ],
     'params' => $params,
 ];
 

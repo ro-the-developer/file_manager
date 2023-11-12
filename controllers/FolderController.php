@@ -17,7 +17,7 @@ class FolderController extends Controller
     {
         $request = json_encode(Yii::$app->request->post()['FolderForm']);
         $model = new FilesLog([
-            'user_id' => 1,
+            'user_id' => Yii::$app->user->id,
             'action' => $action->id,
             'request' => $request
         ]);
