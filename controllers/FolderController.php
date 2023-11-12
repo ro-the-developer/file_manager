@@ -6,7 +6,6 @@ use app\models\FilesLog;
 use yii\helpers\Url;
 use Yii;
 use yii\helpers\FileHelper;
-use yii\filters\AccessControl;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -15,7 +14,7 @@ class FolderController extends Controller
 {
     public function beforeAction($action)
     {
-        $request = json_encode(Yii::$app->request->post()['FolderForm']);
+        $request = json_encode(Yii::$app->request->post()['FolderForm'], JSON_UNESCAPED_SLASHES );
         $model = new FilesLog([
             'user_id' => Yii::$app->user->id,
             'action' => $action->id,

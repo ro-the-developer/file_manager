@@ -50,6 +50,7 @@ $config = [
                 'files/folder/create' => 'folder/create',
                 'files/folder/rename' => 'folder/rename',
                 'files/folder/delete' => 'folder/delete',
+                'logs' => 'logs/index',
             ],
         ],
     ],
